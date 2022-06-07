@@ -1,4 +1,4 @@
-package schedule_test
+package schedule
 
 import (
 	"context"
@@ -15,7 +15,6 @@ import (
 	"github.com/grafana/grafana/pkg/services/ngalert/eval"
 	"github.com/grafana/grafana/pkg/services/ngalert/metrics"
 	"github.com/grafana/grafana/pkg/services/ngalert/models"
-	"github.com/grafana/grafana/pkg/services/ngalert/schedule"
 	"github.com/grafana/grafana/pkg/services/ngalert/state"
 	"github.com/grafana/grafana/pkg/services/ngalert/tests"
 
@@ -96,7 +95,7 @@ func TestWarmStateCache(t *testing.T) {
 	}
 	_ = dbstore.SaveAlertInstance(ctx, saveCmd2)
 
-	schedCfg := schedule.SchedulerCfg{
+	schedCfg := SchedulerCfg{
 		C:            clock.NewMock(),
 		BaseInterval: time.Second,
 		Logger:       log.New("ngalert cache warming test"),
@@ -140,7 +139,7 @@ func TestAlertingTicker(t *testing.T) {
 	mockedClock := clock.NewMock()
 	baseInterval := time.Second
 
-	schedCfg := schedule.SchedulerCfg{
+	schedCfg := SchedulerCfg{
 		C:            mockedClock,
 		BaseInterval: baseInterval,
 		EvalAppliedFunc: func(alertDefKey models.AlertRuleKey, now time.Time) {
@@ -163,7 +162,7 @@ func TestAlertingTicker(t *testing.T) {
 		Scheme: "http",
 		Host:   "localhost",
 	}
-	sched := schedule.NewScheduler(schedCfg, nil, appUrl, st)
+	sched := NewScheduler(schedCfg, nil, appUrl, st)
 
 	go func() {
 		err := sched.Run(ctx)
@@ -306,4 +305,55 @@ func concatenate(keys []models.AlertRuleKey) string {
 		s = append(s, k.String())
 	}
 	return fmt.Sprintf("[%s]", strings.Join(s, ","))
+}
+
+func TestSchedulableAlertRulesRegistry(t *testing.T) {
+	r := alertRulesRegistry{rules: make(map[models.AlertRuleKey]*models.AlertRule)}
+	assert.Len(t, r.all(), 0)
+
+	// replace all rules in the registry with foo
+	r.set([]*models.AlertRule{{OrgID: 1, UID: "foo", Version: 1}})
+	assert.Len(t, r.all(), 1)
+	foo := r.get(models.AlertRuleKey{OrgID: 1, UID: "foo"})
+	require.NotNil(t, foo)
+	assert.Equal(t, models.AlertRule{OrgID: 1, UID: "foo", Version: 1}, *foo)
+
+	// update foo to a newer version
+	r.update(&models.AlertRule{OrgID: 1, UID: "foo", Version: 2})
+	assert.Len(t, r.all(), 1)
+	foo = r.get(models.AlertRuleKey{OrgID: 1, UID: "foo"})
+	require.NotNil(t, foo)
+	assert.Equal(t, models.AlertRule{OrgID: 1, UID: "foo", Version: 2}, *foo)
+
+	// update bar which does not exist in the registry
+	r.update(&models.AlertRule{OrgID: 1, UID: "bar", Version: 1})
+	assert.Len(t, r.all(), 2)
+	foo = r.get(models.AlertRuleKey{OrgID: 1, UID: "foo"})
+	require.NotNil(t, foo)
+	assert.Equal(t, models.AlertRule{OrgID: 1, UID: "foo", Version: 2}, *foo)
+	bar := r.get(models.AlertRuleKey{OrgID: 1, UID: "bar"})
+	require.NotNil(t, foo)
+	assert.Equal(t, models.AlertRule{OrgID: 1, UID: "bar", Version: 1}, *bar)
+
+	// replace all rules in the registry with baz
+	r.set([]*models.AlertRule{{OrgID: 1, UID: "baz", Version: 1}})
+	assert.Len(t, r.all(), 1)
+	baz := r.get(models.AlertRuleKey{OrgID: 1, UID: "baz"})
+	require.NotNil(t, baz)
+	assert.Equal(t, models.AlertRule{OrgID: 1, UID: "baz", Version: 1}, *baz)
+	assert.Nil(t, r.get(models.AlertRuleKey{OrgID: 1, UID: "foo"}))
+	assert.Nil(t, r.get(models.AlertRuleKey{OrgID: 1, UID: "bar"}))
+
+	// delete baz
+	deleted, ok := r.del(models.AlertRuleKey{OrgID: 1, UID: "baz"})
+	assert.True(t, ok)
+	require.NotNil(t, deleted)
+	assert.Equal(t, *deleted, *baz)
+	assert.Len(t, r.all(), 0)
+	assert.Nil(t, r.get(models.AlertRuleKey{OrgID: 1, UID: "baz"}))
+
+	// baz cannot be deleted twice
+	deleted, ok = r.del(models.AlertRuleKey{OrgID: 1, UID: "baz"})
+	assert.False(t, ok)
+	assert.Nil(t, deleted)
 }
