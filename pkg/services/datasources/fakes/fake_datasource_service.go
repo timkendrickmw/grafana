@@ -112,6 +112,30 @@ func (s *FakeDataSourceService) CreateCorrelation(ctx context.Context, cmd *data
 	return datasources.ErrDataSourceNotFound
 }
 
+func (s *FakeDataSourceService) DeleteCorrelation(ctx context.Context, cmd *datasources.DeleteCorrelationCommand) error {
+	for _, datasource := range s.DataSources {
+		if cmd.SourceUID != "" && cmd.SourceUID == datasource.Uid {
+			newCorrelations := make([]datasources.Correlation, len(datasource.Correlations))
+
+			deleted := false
+			for _, correlation := range datasource.Correlations {
+				if correlation.Target != cmd.TargetUID {
+					newCorrelations = append(newCorrelations, correlation)
+				} else {
+					deleted = true
+				}
+			}
+			if !deleted {
+				return datasources.ErrCorrelationNotFound
+			}
+
+			datasource.Correlations = newCorrelations
+			return nil
+		}
+	}
+	return datasources.ErrDataSourceNotFound
+}
+
 func (s *FakeDataSourceService) GetDefaultDataSource(ctx context.Context, query *datasources.GetDefaultDataSourceQuery) error {
 	return nil
 }
