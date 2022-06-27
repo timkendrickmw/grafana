@@ -5455,12 +5455,11 @@ exports[`better eslint`] = {
     "public/app/features/datasources/DataSourceDashboards.tsx:3932611556": [
       [49, 16, 3, "Unexpected any. Specify a different type.", "193409811"]
     ],
-    "public/app/features/datasources/DataSourcesListPage.test.tsx:368182366": [
-      [19, 17, 26, "Do not use any type assertions.", "3994646623"],
-      [22, 14, 126, "Do not use any type assertions.", "1409469672"]
+    "public/app/features/datasources/DataSourcesListPage.test.tsx:3726518198": [
+      [32, 19, 26, "Do not use any type assertions.", "3994646623"]
     ],
-    "public/app/features/datasources/DataSourcesListPage.tsx:247845505": [
-      [44, 14, 22, "Do not use any type assertions.", "2167463294"]
+    "public/app/features/datasources/DataSourcesListPage.tsx:720640207": [
+      [17, 14, 22, "Do not use any type assertions.", "2167463294"]
     ],
     "public/app/features/datasources/__mocks__/dataSourcesMocks.ts:1217473343": [
       [23, 9, 35, "Do not use any type assertions.", "2095437639"]
