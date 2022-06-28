@@ -1,5 +1,7 @@
 import React, { ReactElement } from 'react';
 
+import { DataSourcesListPageContent } from 'app/features/datasources/DataSourcesListPageContent';
+
 export function DataSources(): ReactElement | null {
-  return <div>The list of data sources is under development.</div>;
+  return <DataSourcesListPageContent />;
 }
