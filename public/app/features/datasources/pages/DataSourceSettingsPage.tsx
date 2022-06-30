@@ -12,8 +12,12 @@ import { GrafanaRouteComponentProps } from 'app/core/navigation/types';
 import { getNavModel } from 'app/core/selectors/navModel';
 import { PluginStateInfo } from 'app/features/plugins/components/PluginStateInfo';
 import { StoreState, AccessControlAction } from 'app/types/';
+import { ShowConfirmModalEvent } from 'app/types/events';
 
-import { ShowConfirmModalEvent } from '../../../types/events';
+import BasicSettings from '../components/BasicSettings';
+import ButtonRow from '../components/ButtonRow';
+import { CloudInfoBox } from '../components/CloudInfoBox';
+import { PluginSettings } from '../components/PluginSettings';
 import {
   deleteDataSource,
   initDataSourceSettings,
@@ -24,11 +28,6 @@ import {
 import { getDataSourceLoadingNav, buildNavModel, getDataSourceNav } from '../state/navModel';
 import { dataSourceLoaded, setDataSourceName, setIsDefault } from '../state/reducers';
 import { getDataSource, getDataSourceMeta } from '../state/selectors';
-
-import BasicSettings from './BasicSettings';
-import ButtonRow from './ButtonRow';
-import { CloudInfoBox } from './CloudInfoBox';
-import { PluginSettings } from './PluginSettings';
 
 export interface OwnProps extends GrafanaRouteComponentProps<{ uid: string }> {}
 

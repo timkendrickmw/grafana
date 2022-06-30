@@ -5,7 +5,7 @@ import Page from 'app/core/components/Page/Page';
 import { getNavModel } from 'app/core/selectors/navModel';
 import { StoreState } from 'app/types';
 
-import { DataSourcesListPageContent } from './DataSourcesListPageContent';
+import { DataSourcesListPageContent } from '../components/DataSourcesListPageContent';
 
 export const DataSourcesListPage = () => {
   const navModel = useSelector(({ navIndex }: StoreState) => getNavModel(navIndex, 'datasources'));

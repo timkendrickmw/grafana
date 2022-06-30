@@ -6,9 +6,9 @@ import { LayoutModes } from '@grafana/data';
 import { configureStore } from 'app/store/configureStore';
 import { DataSourcesState } from 'app/types';
 
-import DataSourcesList from './DataSourcesList';
-import { getMockDataSources } from './__mocks__/dataSourcesMocks';
-import { initialState } from './state/reducers';
+import { getMockDataSources } from '../../__mocks__/dataSourcesMocks';
+import { initialState } from '../../state/reducers';
+import DataSourcesList from '../DataSourcesList';
 
 const setup = (stateOverride?: Partial<DataSourcesState>) => {
   const store = configureStore({

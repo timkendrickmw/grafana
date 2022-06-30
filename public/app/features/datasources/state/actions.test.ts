@@ -6,7 +6,7 @@ import { getBackendSrv } from 'app/core/services/backend_srv';
 import { ThunkResult, ThunkDispatch } from 'app/types';
 
 import { getMockPlugin, getMockPlugins } from '../../plugins/__mocks__/pluginMocks';
-import { GenericDataSourcePlugin } from '../settings/PluginSettings';
+import { GenericDataSourcePlugin } from '../components/PluginSettings';
 import { initDataSourceSettings } from '../state/actions';
 
 import {

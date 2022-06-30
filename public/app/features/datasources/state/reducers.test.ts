@@ -4,7 +4,7 @@ import { PluginMeta, PluginMetaInfo, PluginType, LayoutModes } from '@grafana/da
 import { DataSourceSettingsState, DataSourcesState } from 'app/types';
 
 import { getMockDataSource, getMockDataSources } from '../__mocks__/dataSourcesMocks';
-import { GenericDataSourcePlugin } from '../settings/PluginSettings';
+import { GenericDataSourcePlugin } from '../components/PluginSettings';
 
 import {
   dataSourceLoaded,

@@ -6,7 +6,7 @@ import { getRouteComponentProps } from 'app/core/navigation/__mocks__/routeProps
 import { RouteDescriptor } from 'app/core/navigation/types';
 import { PluginDashboard } from 'app/types';
 
-import { DataSourceDashboards, Props } from './DataSourceDashboards';
+import { DataSourceDashboards, Props } from '../../pages/DataSourceDashboardsPage';
 
 const setup = (propOverrides?: Partial<Props>) => {
   const props: Props = {

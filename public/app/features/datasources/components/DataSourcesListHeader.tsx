@@ -5,17 +5,21 @@ import PageActionBar from 'app/core/components/PageActionBar/PageActionBar';
 import { contextSrv } from 'app/core/core';
 import { AccessControlAction, StoreState } from 'app/types';
 
-import { setDataSourcesSearchQuery } from './state/reducers';
-import { getDataSourcesSearchQuery } from './state/selectors';
+import { setDataSourcesSearchQuery } from '../state/reducers';
+import { getDataSourcesSearchQuery } from '../state/selectors';
 
-export const DataSourcesListHeader = () => {
+export type Props = {
+  newDataSourceLink?: string;
+};
+
+export const DataSourcesListHeader = ({ newDataSourceLink = 'datasources/new' }) => {
   const dispatch = useDispatch();
   const setSearchQuery = useCallback((q: string) => dispatch(setDataSourcesSearchQuery(q)), [dispatch]);
   const searchQuery = useSelector(({ dataSources }: StoreState) => getDataSourcesSearchQuery(dataSources));
   const canCreateDataSource = contextSrv.hasPermission(AccessControlAction.DataSourcesCreate);
 
   const linkButton = {
-    href: 'datasources/new',
+    href: newDataSourceLink,
     title: 'Add data source',
     disabled: !canCreateDataSource,
   };

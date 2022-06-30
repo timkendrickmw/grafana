@@ -8,9 +8,15 @@ import { Card, Tag, useStyles } from '@grafana/ui';
 
 export type Props = {
   dataSources: DataSourceSettings[];
+
+  // Can be used to define the URLs for editing a data source
+  getDataSourcesEditLink?: (dataSourceId: string) => string;
 };
 
-export const DataSourcesList = ({ dataSources }: Props) => {
+export const DataSourcesList = ({
+  getDataSourcesEditLink = (uid: string) => `datasources/edit/${uid}`,
+  dataSources,
+}: Props) => {
   const styles = useStyles(getStyles);
 
   return (
@@ -18,7 +24,7 @@ export const DataSourcesList = ({ dataSources }: Props) => {
       {dataSources.map((dataSource) => {
         return (
           <li key={dataSource.id}>
-            <Card href={`datasources/edit/${dataSource.uid}`}>
+            <Card href={getDataSourcesEditLink(dataSource.uid)}>
               <Card.Heading>{dataSource.name}</Card.Heading>
               <Card.Figure>
                 <img src={dataSource.typeLogoUrl} alt="" height="40px" width="40px" className={styles.logo} />

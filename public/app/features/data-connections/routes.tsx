@@ -4,6 +4,7 @@ import { RouteDescriptor } from 'app/core/navigation/types';
 
 import { ROUTE_BASE_ID } from './constants';
 
+// We are having this as a separate function due to only adding it to the app routes in case the feature toggle is enabled
 export function getRoutes(): RouteDescriptor[] {
   if (config.featureToggles.dataConnectionsConsole) {
     return [

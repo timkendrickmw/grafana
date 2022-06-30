@@ -7,10 +7,11 @@ import PageLoader from 'app/core/components/PageLoader/PageLoader';
 import { contextSrv } from 'app/core/core';
 import { StoreState, AccessControlAction } from 'app/types';
 
+import { loadDataSources } from '../state/actions';
+import { getDataSourcesCount, getDataSources } from '../state/selectors';
+
 import DataSourcesList from './DataSourcesList';
 import { DataSourcesListHeader } from './DataSourcesListHeader';
-import { loadDataSources } from './state/actions';
-import { getDataSourcesCount, getDataSources } from './state/selectors';
 
 const buttonIcon: IconName = 'database';
 const emptyListModel = {
@@ -24,7 +25,14 @@ const emptyListModel = {
   proTipTarget: '_blank',
 };
 
-export const DataSourcesListPageContent = () => {
+export type Props = {
+  // Used to define the link for the "New datasource" button
+  newDataSourceLink?: string;
+  // Used to define where the "Edit datasource" links should point to
+  getDataSourcesEditLink?: (dataSourceId: string) => string;
+};
+
+export const DataSourcesListPageContent = ({ getDataSourcesEditLink, newDataSourceLink }: Props) => {
   const dispatch = useDispatch();
   const dataSources = useSelector((state: StoreState) => getDataSources(state.dataSources));
   const dataSourcesCount = useSelector(({ dataSources }: StoreState) => getDataSourcesCount(dataSources));
@@ -51,8 +59,8 @@ export const DataSourcesListPageContent = () => {
 
   return (
     <>
-      <DataSourcesListHeader />
-      <DataSourcesList dataSources={dataSources} />
+      <DataSourcesListHeader newDataSourceLink={newDataSourceLink} />
+      <DataSourcesList getDataSourcesEditLink={getDataSourcesEditLink} dataSources={dataSources} />
     </>
   );
 };
