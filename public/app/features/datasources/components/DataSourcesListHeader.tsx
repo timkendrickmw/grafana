@@ -9,6 +9,7 @@ import { setDataSourcesSearchQuery } from '../state/reducers';
 import { getDataSourcesSearchQuery } from '../state/selectors';
 
 export type Props = {
+  // Can be used to override the URL for creating a new data source
   newDataSourceLink?: string;
 };
 

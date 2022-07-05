@@ -9,7 +9,7 @@ import { getMockPlugin } from 'app/features/plugins/__mocks__/pluginMocks';
 
 import { getMockDataSource } from '../../__mocks__/dataSourcesMocks';
 import { dataSourceLoaded, setDataSourceName, setIsDefault } from '../../state/reducers';
-import { DataSourceSettingsPage, Props } from '../DataSourceSettingsPage';
+import { EditDataSourcePage, Props } from '../EditDataSourcePage';
 
 jest.mock('app/core/core', () => {
   return {
@@ -51,9 +51,9 @@ const getProps = (): Props => ({
   testingStatus: {},
 });
 
-describe('Render', () => {
+describe('<EditDataSourcePage>', () => {
   it('should not render loading when props are ready', () => {
-    render(<DataSourceSettingsPage {...getProps()} />);
+    render(<EditDataSourcePage {...getProps()} />);
 
     expect(screen.queryByText('Loading ...')).not.toBeInTheDocument();
   });
@@ -63,7 +63,7 @@ describe('Render', () => {
     mockProps.dataSource.id = 0;
     mockProps.loading = true;
 
-    render(<DataSourceSettingsPage {...mockProps} />);
+    render(<EditDataSourcePage {...mockProps} />);
 
     expect(screen.getByText('Loading ...')).toBeInTheDocument();
   });
@@ -72,7 +72,7 @@ describe('Render', () => {
     const mockProps = getProps();
     mockProps.dataSourceMeta.state = PluginState.beta;
 
-    render(<DataSourceSettingsPage {...mockProps} />);
+    render(<EditDataSourcePage {...mockProps} />);
 
     expect(screen.getByTitle('This feature is close to complete but not fully tested')).toBeInTheDocument();
   });
@@ -81,7 +81,7 @@ describe('Render', () => {
     const mockProps = getProps();
     mockProps.dataSourceMeta.state = PluginState.alpha;
 
-    render(<DataSourceSettingsPage {...mockProps} />);
+    render(<EditDataSourcePage {...mockProps} />);
 
     expect(
       screen.getByTitle('This feature is experimental and future updates might not be backward compatible')
@@ -92,7 +92,7 @@ describe('Render', () => {
     const mockProps = getProps();
     mockProps.dataSource.readOnly = false;
 
-    render(<DataSourceSettingsPage {...mockProps} />);
+    render(<EditDataSourcePage {...mockProps} />);
 
     expect(screen.queryByLabelText(selectors.pages.DataSource.readOnly)).not.toBeInTheDocument();
   });
@@ -101,7 +101,7 @@ describe('Render', () => {
     const mockProps = getProps();
     mockProps.dataSource.readOnly = true;
 
-    render(<DataSourceSettingsPage {...mockProps} />);
+    render(<EditDataSourcePage {...mockProps} />);
 
     expect(screen.getByLabelText(selectors.pages.DataSource.readOnly)).toBeInTheDocument();
   });
@@ -116,7 +116,7 @@ describe('Render', () => {
       },
     };
 
-    render(<DataSourceSettingsPage {...mockProps} />);
+    render(<EditDataSourcePage {...mockProps} />);
 
     expect(screen.getByText(mockProps.testingStatus.message)).toBeInTheDocument();
     expect(screen.getByText(mockProps.testingStatus.details.message)).toBeInTheDocument();
@@ -132,7 +132,7 @@ describe('Render', () => {
       },
     };
 
-    render(<DataSourceSettingsPage {...mockProps} />);
+    render(<EditDataSourcePage {...mockProps} />);
 
     expect(screen.getByText(mockProps.testingStatus.message)).toBeInTheDocument();
   });
@@ -146,7 +146,7 @@ describe('Render', () => {
       },
     };
 
-    render(<DataSourceSettingsPage {...mockProps} />);
+    render(<EditDataSourcePage {...mockProps} />);
 
     expect(screen.getByText(mockProps.testingStatus.message)).toBeInTheDocument();
   });
@@ -161,7 +161,7 @@ describe('Render', () => {
       },
     };
 
-    render(<DataSourceSettingsPage {...mockProps} />);
+    render(<EditDataSourcePage {...mockProps} />);
 
     expect(screen.getByText(mockProps.testingStatus.details.verboseMessage)).toBeInTheDocument();
   });

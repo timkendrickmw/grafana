@@ -97,8 +97,7 @@ export function getAppRoutes(): RouteDescriptor[] {
     {
       path: '/datasources/edit/:uid/',
       component: SafeDynamicImport(
-        () =>
-          import(/* webpackChunkName: "DataSourceSettingsPage"*/ '../features/datasources/pages/DataSourceSettingsPage')
+        () => import(/* webpackChunkName: "EditDataSourcePage"*/ '../features/datasources/pages/EditDataSourcePage')
       ),
     },
     {
