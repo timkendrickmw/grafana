@@ -1,6 +1,5 @@
 import { DataSourcePluginMeta, DataSourceSettings, UrlQueryValue } from '@grafana/data';
-
-import { DataSourcesState } from '../../../types/datasources';
+import { DataSourcesState } from 'app/types/datasources';
 
 export const getDataSources = (state: DataSourcesState) => {
   const regex = new RegExp(state.searchQuery, 'i');

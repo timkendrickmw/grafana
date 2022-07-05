@@ -3,13 +3,12 @@ import { thunkTester } from 'test/core/thunk/thunkTester';
 
 import { BackendSrvRequest, FetchError, FetchResponse } from '@grafana/runtime';
 import { getBackendSrv } from 'app/core/services/backend_srv';
+import { getMockPlugin, getMockPlugins } from 'app/features/plugins/__mocks__/pluginMocks';
 import { ThunkResult, ThunkDispatch } from 'app/types';
 
-import { getMockPlugin, getMockPlugins } from '../../../plugins/__mocks__/pluginMocks';
 import { GenericDataSourcePlugin } from '../../types';
+import { findNewName, nameExits } from '../../utils';
 import {
-  findNewName,
-  nameExits,
   InitDataSourceSettingDependencies,
   testDataSource,
   TestDataSourceDependencies,
