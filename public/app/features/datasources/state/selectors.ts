@@ -9,7 +9,7 @@ export const getDataSources = (state: DataSourcesState) => {
   });
 };
 
-export const getDataSourcePlugins = (state: DataSourcesState) => {
+export const getFilteredDataSourcePlugins = (state: DataSourcesState) => {
   const regex = new RegExp(state.dataSourceTypeSearchQuery, 'i');
 
   return state.plugins.filter((type: DataSourcePluginMeta) => {

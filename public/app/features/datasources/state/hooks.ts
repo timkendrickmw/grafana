@@ -13,6 +13,7 @@ import {
   testDataSource,
   loadDataSource,
   loadDataSources,
+  loadDataSourcePlugins,
   addDataSource,
   updateDataSource,
   deleteLoadedDataSource,
@@ -53,6 +54,14 @@ export const useLoadDataSource = (id: string) => {
   useEffect(() => {
     dispatch(loadDataSource(id));
   }, [dispatch, id]);
+};
+
+export const useLoadDataSourcePlugins = () => {
+  const dispatch = useDispatch();
+
+  useEffect(() => {
+    dispatch(loadDataSourcePlugins());
+  }, [dispatch]);
 };
 
 export const useAddDatasource = () => {
