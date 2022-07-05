@@ -4,9 +4,6 @@ import { useDispatch } from 'react-redux';
 import { DataSourceSettings as DataSourceSettingsType } from '@grafana/data';
 import PageLoader from 'app/core/components/PageLoader/PageLoader';
 
-import BasicSettings from '../components/BasicSettings';
-import ButtonRow from '../components/ButtonRow';
-import { CloudInfoBox } from '../components/CloudInfoBox';
 import {
   dataSourceLoaded,
   setDataSourceName,
@@ -22,6 +19,9 @@ import {
   useTestDataSource,
 } from '../state';
 
+import BasicSettings from './BasicSettings';
+import ButtonRow from './ButtonRow';
+import { CloudInfoBox } from './CloudInfoBox';
 import { DataSourceLoadError } from './DataSourceLoadError';
 import { DataSourceMissingRightsMessage } from './DataSourceMissingRightsMessage';
 import { DataSourcePluginConfigPage } from './DataSourcePluginConfigPage';
@@ -37,7 +37,7 @@ export type Props = {
   pageId?: string | null;
 };
 
-export const DataSourceSettings = ({ id, pageId }: Props) => {
+export const EditDataSource = ({ id, pageId }: Props) => {
   useInitDataSourceSettings(id);
 
   const dispatch = useDispatch();

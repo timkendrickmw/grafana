@@ -3,7 +3,7 @@ import React from 'react';
 import Page from 'app/core/components/Page/Page';
 import { GrafanaRouteComponentProps } from 'app/core/navigation/types';
 
-import { DataSourceSettings } from '../components/DataSourceSettings';
+import { EditDataSource } from '../components/EditDataSource';
 import { useDataSourceSettingsNav } from '../state';
 
 export interface Props extends GrafanaRouteComponentProps<{ uid: string }> {}
@@ -17,7 +17,7 @@ export const EditDataSourcePage = (props: Props) => {
   return (
     <Page navModel={nav}>
       <Page.Contents>
-        <DataSourceSettings id={dataSourceId} pageId={pageId} />
+        <EditDataSource id={dataSourceId} pageId={pageId} />
       </Page.Contents>
     </Page>
   );
