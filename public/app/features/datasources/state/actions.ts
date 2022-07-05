@@ -261,7 +261,7 @@ export function updateDataSource(dataSource: DataSourceSettings): ThunkResult<vo
   };
 }
 
-export function deleteDataSource(): ThunkResult<void> {
+export function deleteLoadedDataSource(): ThunkResult<void> {
   return async (dispatch, getStore) => {
     const dataSource = getStore().dataSources.dataSource;
 

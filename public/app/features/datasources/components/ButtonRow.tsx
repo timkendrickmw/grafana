@@ -46,7 +46,7 @@ const ButtonRow: FC<Props> = ({ canSave, canDelete, onDelete, onSubmit, onTest, 
         </Button>
       )}
       {!canSave && (
-        <Button type="submit" variant="primary" onClick={onTest}>
+        <Button variant="primary" onClick={onTest}>
           Test
         </Button>
       )}

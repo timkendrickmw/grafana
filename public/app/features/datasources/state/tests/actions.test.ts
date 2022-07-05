@@ -5,10 +5,8 @@ import { BackendSrvRequest, FetchError, FetchResponse } from '@grafana/runtime';
 import { getBackendSrv } from 'app/core/services/backend_srv';
 import { ThunkResult, ThunkDispatch } from 'app/types';
 
-import { getMockPlugin, getMockPlugins } from '../../plugins/__mocks__/pluginMocks';
-import { GenericDataSourcePlugin } from '../components/PluginSettings';
-import { initDataSourceSettings } from '../state/actions';
-
+import { getMockPlugin, getMockPlugins } from '../../../plugins/__mocks__/pluginMocks';
+import { GenericDataSourcePlugin } from '../../types';
 import {
   findNewName,
   nameExits,
@@ -16,14 +14,15 @@ import {
   testDataSource,
   TestDataSourceDependencies,
   getDataSourceUsingUidOrId,
-} from './actions';
+  initDataSourceSettings,
+} from '../actions';
 import {
   initDataSourceSettingsSucceeded,
   initDataSourceSettingsFailed,
   testDataSourceStarting,
   testDataSourceSucceeded,
   testDataSourceFailed,
-} from './reducers';
+} from '../reducers';
 
 jest.mock('app/core/services/backend_srv');
 jest.mock('@grafana/runtime', () => ({
