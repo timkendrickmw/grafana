@@ -9,33 +9,46 @@ import (
 	"github.com/grafana/grafana/pkg/infra/log"
 	plugifaces "github.com/grafana/grafana/pkg/plugins"
 	"github.com/grafana/grafana/pkg/registry"
+	"github.com/grafana/grafana/pkg/services/accesscontrol"
 	"github.com/grafana/grafana/pkg/services/alerting"
 	dashboardservice "github.com/grafana/grafana/pkg/services/dashboards"
 	datasourceservice "github.com/grafana/grafana/pkg/services/datasources"
 	"github.com/grafana/grafana/pkg/services/encryption"
+	"github.com/grafana/grafana/pkg/services/ngalert/provisioning"
+	"github.com/grafana/grafana/pkg/services/ngalert/store"
 	"github.com/grafana/grafana/pkg/services/notifications"
 	"github.com/grafana/grafana/pkg/services/pluginsettings"
+	"github.com/grafana/grafana/pkg/services/provisioning/alerting/contactpoints"
 	"github.com/grafana/grafana/pkg/services/provisioning/dashboards"
 	"github.com/grafana/grafana/pkg/services/provisioning/datasources"
 	"github.com/grafana/grafana/pkg/services/provisioning/notifiers"
 	"github.com/grafana/grafana/pkg/services/provisioning/plugins"
 	"github.com/grafana/grafana/pkg/services/provisioning/utils"
 	"github.com/grafana/grafana/pkg/services/searchV2"
+	"github.com/grafana/grafana/pkg/services/secrets"
 	"github.com/grafana/grafana/pkg/services/sqlstore"
 	"github.com/grafana/grafana/pkg/setting"
 )
 
-func ProvideService(cfg *setting.Cfg, sqlStore *sqlstore.SQLStore, pluginStore plugifaces.Store,
-	encryptionService encryption.Internal, notificatonService *notifications.NotificationService,
+func ProvideService(
+	ac accesscontrol.AccessControl,
+	cfg *setting.Cfg,
+	sqlStore *sqlstore.SQLStore,
+	pluginStore plugifaces.Store,
+	encryptionService encryption.Internal,
+	notificatonService *notifications.NotificationService,
 	dashboardProvisioningService dashboardservice.DashboardProvisioningService,
 	datasourceService datasourceservice.DataSourceService,
 	dashboardService dashboardservice.DashboardService,
-	alertingService *alerting.AlertNotificationService, pluginSettings pluginsettings.Service,
+	alertingService *alerting.AlertNotificationService,
+	pluginSettings pluginsettings.Service,
 	searchService searchV2.SearchService,
+	secrectService secrets.Service,
 ) (*ProvisioningServiceImpl, error) {
 	s := &ProvisioningServiceImpl{
 		Cfg:                          cfg,
 		SQLStore:                     sqlStore,
+		ac:                           ac,
 		pluginStore:                  pluginStore,
 		EncryptionService:            encryptionService,
 		NotificationService:          notificatonService,
@@ -50,6 +63,7 @@ func ProvideService(cfg *setting.Cfg, sqlStore *sqlstore.SQLStore, pluginStore p
 		alertingService:              alertingService,
 		pluginsSettings:              pluginSettings,
 		searchService:                searchService,
+		secretService:                secrectService,
 	}
 	return s, nil
 }
@@ -61,6 +75,7 @@ type ProvisioningService interface {
 	ProvisionPlugins(ctx context.Context) error
 	ProvisionNotifications(ctx context.Context) error
 	ProvisionDashboards(ctx context.Context) error
+	ProvisionContactPoints(ctx context.Context) error
 	GetDashboardProvisionerResolvedPath(name string) string
 	GetAllowUIUpdatesFromConfig(name string) bool
 }
@@ -73,6 +88,7 @@ func NewProvisioningServiceImpl() *ProvisioningServiceImpl {
 		provisionNotifiers:      notifiers.Provision,
 		provisionDatasources:    datasources.Provision,
 		provisionPlugins:        plugins.Provision,
+		provisionContactPoints:  contactpoints.Provision,
 	}
 }
 
@@ -95,6 +111,7 @@ func newProvisioningServiceImpl(
 type ProvisioningServiceImpl struct {
 	Cfg                          *setting.Cfg
 	SQLStore                     *sqlstore.SQLStore
+	ac                           accesscontrol.AccessControl
 	pluginStore                  plugifaces.Store
 	EncryptionService            encryption.Internal
 	NotificationService          *notifications.NotificationService
@@ -105,6 +122,7 @@ type ProvisioningServiceImpl struct {
 	provisionNotifiers           func(context.Context, string, notifiers.Manager, notifiers.SQLStore, encryption.Internal, *notifications.NotificationService) error
 	provisionDatasources         func(context.Context, string, datasources.Store, utils.OrgStore) error
 	provisionPlugins             func(context.Context, string, plugins.Store, plugifaces.Store, pluginsettings.Service) error
+	provisionContactPoints       func(context.Context, string, *provisioning.ContactPointService) error
 	mutex                        sync.Mutex
 	dashboardProvisioningService dashboardservice.DashboardProvisioningService
 	dashboardService             dashboardservice.DashboardService
@@ -112,6 +130,7 @@ type ProvisioningServiceImpl struct {
 	alertingService              *alerting.AlertNotificationService
 	pluginsSettings              pluginsettings.Service
 	searchService                searchV2.SearchService
+	secretService                secrets.Service
 }
 
 func (ps *ProvisioningServiceImpl) RunInitProvisioners(ctx context.Context) error {
@@ -126,6 +145,11 @@ func (ps *ProvisioningServiceImpl) RunInitProvisioners(ctx context.Context) erro
 	}
 
 	err = ps.ProvisionNotifications(ctx)
+	if err != nil {
+		return err
+	}
+
+	err = ps.ProvisionContactPoints(ctx)
 	if err != nil {
 		return err
 	}
@@ -216,6 +240,21 @@ func (ps *ProvisioningServiceImpl) ProvisionDashboards(ctx context.Context) erro
 	}
 	ps.dashboardProvisioner = dashProvisioner
 	return nil
+}
+
+func (ps *ProvisioningServiceImpl) ProvisionContactPoints(ctx context.Context) error {
+	contactPointsPath := filepath.Join(ps.Cfg.ProvisioningPath, "contactpoints")
+	st := &store.DBstore{
+		BaseInterval:     ps.Cfg.UnifiedAlerting.BaseInterval,
+		DefaultInterval:  ps.Cfg.UnifiedAlerting.DefaultRuleEvaluationInterval,
+		SQLStore:         ps.SQLStore,
+		Logger:           ps.log,
+		FolderService:    nil, // we don't use it yet
+		AccessControl:    ps.ac,
+		DashboardService: ps.dashboardService,
+	}
+	contactPointService := provisioning.NewContactPointService(st, ps.secretService, st, st, ps.log)
+	return ps.provisionContactPoints(ctx, contactPointsPath, contactPointService)
 }
 
 func (ps *ProvisioningServiceImpl) GetDashboardProvisionerResolvedPath(name string) string {
