@@ -19,6 +19,7 @@ import { importDataSourcePlugin } from 'app/features/plugins/plugin_loader';
 import { DataSourcePluginCategory, ThunkDispatch, ThunkResult } from 'app/types';
 
 import { nameExits, findNewName } from '../utils';
+import * as api from '../api';
 
 import { buildCategories } from './buildCategories';
 import { buildNavModel } from './navModel';
@@ -134,7 +135,7 @@ export const testDataSource = (
 
 export function loadDataSources(): ThunkResult<void> {
   return async (dispatch) => {
-    const response = await getBackendSrv().get('/api/datasources');
+    const response = await api.getDataSources();
     dispatch(dataSourcesLoaded(response));
   };
 }

@@ -1,30 +1,33 @@
 import { render, screen } from '@testing-library/react';
 import React from 'react';
+import { Provider } from 'react-redux';
 
-import { DataSourceSettings } from '@grafana/data';
+import { DataSourceSettings, LayoutModes } from '@grafana/data';
 import { getRouteComponentProps } from 'app/core/navigation/__mocks__/routeProps';
-import { RouteDescriptor } from 'app/core/navigation/types';
-import { PluginDashboard } from 'app/types';
+import { configureStore } from 'app/store/configureStore';
+import { DataSourcesState } from 'app/types';
 
-import { DataSourceDashboards, Props } from '../../pages/DataSourceDashboardsPage';
+import { navIndex } from '../../__mocks__/store.navIndex.mock';
+import { DataSourceDashboardsPage } from '../../pages/DataSourceDashboardsPage';
+import { initialState } from '../../state/reducers';
 
-const setup = (propOverrides?: Partial<Props>) => {
-  const props: Props = {
-    ...getRouteComponentProps(),
-    navModel: { main: { text: 'nav-text' }, node: { text: 'node-text' } },
-    dashboards: [] as PluginDashboard[],
-    dataSource: {} as DataSourceSettings,
-    dataSourceId: 'x',
-    importDashboard: jest.fn(),
-    loadDataSource: jest.fn(),
-    loadPluginDashboards: jest.fn(),
-    removeDashboard: jest.fn(),
-    route: {} as RouteDescriptor,
-    isLoading: false,
-    ...propOverrides,
-  };
+const setup = (stateOverride?: Partial<DataSourcesState>) => {
+  const store = configureStore({
+    dataSources: {
+      ...initialState,
+      dataSources: [] as DataSourceSettings[],
+      layoutMode: LayoutModes.Grid,
+      hasFetched: false,
+      ...stateOverride,
+    },
+    navIndex,
+  });
 
-  return render(<DataSourceDashboards {...props} />);
+  return render(
+    <Provider store={store}>
+      <DataSourceDashboardsPage {...getRouteComponentProps()} />
+    </Provider>
+  );
 };
 
 describe('Render', () => {

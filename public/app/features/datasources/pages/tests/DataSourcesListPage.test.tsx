@@ -7,7 +7,7 @@ import { configureStore } from 'app/store/configureStore';
 import { DataSourcesState } from 'app/types';
 
 import { getMockDataSources } from '../../__mocks__/dataSourcesMocks';
-import navIndex from '../../__mocks__/store.navIndex.mock';
+import { navIndex } from '../../__mocks__/store.navIndex.mock';
 import { initialState } from '../../state/reducers';
 import { DataSourcesListPage } from '../DataSourcesListPage';
 
