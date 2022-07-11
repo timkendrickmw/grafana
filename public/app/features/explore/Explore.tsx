@@ -158,8 +158,8 @@ export class Explore extends React.PureComponent<Props, ExploreState> {
   };
 
   onClickAddQueryRowButton = () => {
-    const { exploreId, queryKeys } = this.props;
-    this.props.addQueryRow(exploreId, queryKeys.length);
+    const { exploreId, queryKeys, datasourceInstance } = this.props;
+    this.props.addQueryRow(exploreId, queryKeys.length, datasourceInstance);
   };
 
   onMakeAbsoluteTime = () => {
@@ -280,12 +280,15 @@ export class Explore extends React.PureComponent<Props, ExploreState> {
   }
 
   renderNodeGraphPanel() {
-    const { exploreId, showTrace, queryResponse } = this.props;
+    const { exploreId, showTrace, queryResponse, datasourceInstance } = this.props;
+    const datasourceType = datasourceInstance ? datasourceInstance?.type : 'unknown';
+
     return (
       <NodeGraphContainer
         dataFrames={this.memoizedGetNodeGraphDataFrames(queryResponse.series)}
         exploreId={exploreId}
         withTraceView={showTrace}
+        datasourceType={datasourceType}
       />
     );
   }
