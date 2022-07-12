@@ -65,8 +65,8 @@ export class DashboardGridUnconnected extends PureComponent<Props, State> {
   buildLayout() {
     const layout = [];
     this.panelMap = {};
-
-    for (const panel of this.props.dashboard.panels) {
+    const panels = this.getPanels();
+    for (const panel of panels) {
       if (!panel.key) {
         panel.key = `panel-${panel.id}-${Date.now()}`;
       }
@@ -96,6 +96,12 @@ export class DashboardGridUnconnected extends PureComponent<Props, State> {
     }
 
     return layout;
+  }
+
+  getPanels() {
+    const viewPanel = this.props.dashboard.panels.filter((panel) => panel.isViewing);
+
+    return viewPanel.length ? viewPanel : this.props.dashboard.panels;
   }
 
   onLayoutChange = (newLayout: ReactGridLayout.Layout[]) => {
@@ -163,7 +169,9 @@ export class DashboardGridUnconnected extends PureComponent<Props, State> {
       this.gridWidth = gridWidth;
     }
 
-    for (const panel of this.props.dashboard.panels) {
+    const panels = this.getPanels();
+
+    for (const panel of panels) {
       const panelClasses = classNames({ 'react-grid-item--fullscreen': panel.isViewing });
 
       panelElements.push(
