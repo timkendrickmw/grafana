@@ -336,6 +336,12 @@ export class Scene {
           targetedElement!.applyDrag(event);
         });
       })
+      .on('dragStart', (event) => {
+        const targetedElement = this.findElementByTarget(event.target);
+        if (targetedElement) {
+          targetedElement.sizeStyle = { ...targetedElement.sizeStyle, zIndex: 100 };
+        }
+      })
       .on('dragEnd', (event) => {
         const targetedElement = this.findElementByTarget(event.target);
         if (targetedElement) {
@@ -402,6 +408,7 @@ export class Scene {
       this.updateSelection({ targets });
 
       if (event.isDragStart) {
+        console.log('isDragStart');
         event.inputEvent.preventDefault();
         setTimeout(() => {
           this.moveable!.dragStart(event.inputEvent);
