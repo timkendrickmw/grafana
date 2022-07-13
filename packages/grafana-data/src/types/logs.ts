@@ -155,7 +155,8 @@ export interface DataSourceWithLogsContextSupport {
    */
   getLogRowContext: <TContextQueryOptions extends {}>(
     row: LogRowModel,
-    options?: TContextQueryOptions
+    options?: TContextQueryOptions,
+    query?: DataQuery
   ) => Promise<DataQueryResponse>;
 
   /**
